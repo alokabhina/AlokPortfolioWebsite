@@ -59,7 +59,7 @@ export const STATS = [
 export const SKILLS = [
   {
     category: 'Programming',
-    icon: '{ }',
+    icon: '{}',
     items: [
       { name: 'JavaScript', iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
       { name: 'Python', iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg' },

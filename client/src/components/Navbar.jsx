@@ -95,7 +95,7 @@ export default function Navbar() {
           </Link>
 
           {/* ── Desktop Nav Links ─────────────────────────────── */}
-          <ul className="hidden lg:flex items-center gap-7 list-none">
+          <ul className="hidden lg:flex items-center gap-5 list-none">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
@@ -110,7 +110,7 @@ export default function Navbar() {
           </ul>
 
           {/* ── Right: Socials + Theme Toggle ────────────────── */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
             {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
               <a
                 key={label}

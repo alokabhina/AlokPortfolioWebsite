@@ -118,7 +118,7 @@ function CategoryCard({ category, index, delay }) {
 export default function Skills() {
   const { data: rawSkills } = useFetch('/api/skills', null)
 
-  const categories = rawSkills?.grouped
+  const categories = rawSkills?.grouped && Object.keys(rawSkills.grouped).length > 0
     ? Object.entries(rawSkills.grouped).map(([cat, items]) => ({ category: cat, icon: '⚙', items }))
     : SKILLS
 

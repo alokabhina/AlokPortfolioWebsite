@@ -8,7 +8,7 @@ import { api } from '@/lib'
 // ─── Teaching Hero ────────────────────────────────────────────
 function TeachingHero() {
   return (
-    <section style={{ padding:'40px 0 0', background:'var(--bg-secondary)' }}>
+    <section style={{ padding:'40px 0 0', background:'var(--bg-secondary)', overflow:'hidden' }}>
       <div className="container-main">
         <RevealOnScroll>
           <p className="section-tag" style={{ justifyContent:'center' }}>04. Teaching</p>
@@ -46,7 +46,7 @@ function TopicCards() {
             What I teach
           </h2>
         </RevealOnScroll>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'16px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:'16px' }}>
           {TEACHING.map((subject, i) => (
             <RevealOnScroll key={subject._id} delay={i * 0.06} direction="up">
               <div style={{
@@ -136,11 +136,11 @@ function CurriculumAccordion() {
                         border:'none', cursor:'pointer', textAlign:'left', transition:'background 0.2s',
                       }}>
                         <span style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-                          <span style={{ fontFamily:'DM Mono, monospace', fontSize:'9px', background:'var(--accent-dim)', color:'var(--accent)', padding:'2px 7px', borderRadius:'4px' }}>
-                            {subject.icon} {subject.subject}
+                          <span style={{ fontFamily:'DM Mono, monospace', fontSize:'9px', background:'var(--accent-dim)', color:'var(--accent)', padding:'2px 7px', borderRadius:'4px', flexShrink:0 }}>
+                            {subject.icon}
                           </span>
-                          <span style={{ fontFamily:'Syne, sans-serif', fontSize:'12px', fontWeight:600, color: isOpen ? 'var(--accent)' : 'var(--text-heading)' }}>
-                            {item.title}
+                          <span style={{ fontFamily:'Syne, sans-serif', fontSize:'12px', fontWeight:600, color: isOpen ? 'var(--accent)' : 'var(--text-heading)', wordBreak:'break-word' }}>
+                            {subject.subject} — {item.title}
                           </span>
                         </span>
                         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration:0.22 }} style={{ color:'var(--text-secondary)', flexShrink:0 }}>
@@ -225,9 +225,9 @@ function TestimonialsMarquee() {
       {/* Full-width marquee */}
       <div style={{ overflow:'hidden', position:'relative' }}>
         {/* Left fade */}
-        <div style={{ position:'absolute', left:0, top:0, bottom:0, width:'80px', background:'linear-gradient(to right, var(--bg-primary), transparent)', zIndex:1, pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', left:0, top:0, bottom:0, width:'40px', background:'linear-gradient(to right, var(--bg-primary), transparent)', zIndex:1, pointerEvents:'none' }}/>
         {/* Right fade */}
-        <div style={{ position:'absolute', right:0, top:0, bottom:0, width:'80px', background:'linear-gradient(to left, var(--bg-primary), transparent)', zIndex:1, pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', right:0, top:0, bottom:0, width:'40px', background:'linear-gradient(to left, var(--bg-primary), transparent)', zIndex:1, pointerEvents:'none' }}/>
 
         <div
           ref={trackRef}
@@ -248,7 +248,7 @@ function TestimonialsMarquee() {
               borderTop:'2px solid var(--accent)',
               borderRadius:'14px',
               padding:'18px 20px',
-              width:'280px',
+              width:'min(280px, 80vw)',
               flexShrink:0,
               display:'flex',
               flexDirection:'column',

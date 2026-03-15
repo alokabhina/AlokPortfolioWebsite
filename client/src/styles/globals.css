@@ -632,3 +632,39 @@ html.light .grid-flowing-line { display: none !important; }
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+/* ─── Mobile Responsive Fixes ───────────────────────────────── */
+@media (max-width: 640px) {
+
+  /* Prevent ALL overflow */
+  html, body { overflow-x: hidden; max-width: 100vw; }
+
+  /* Any long link — break it */
+  a { word-break: break-all; overflow-wrap: anywhere; max-width: 100%; }
+
+  /* Hero section - single column */
+  .hero-col-right { display: flex; justify-content: center; }
+
+  /* Featured project card - single col on mobile */
+  .group.grid { grid-template-columns: 1fr !important; }
+
+  /* Marquee card size */
+  .testimonial-card { width: min(260px, 80vw) !important; }
+
+  /* Container padding tighter */
+  .container-main { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+  /* Page section padding smaller */
+  .section-pad { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+
+  /* Footer grid single column */
+  footer .grid { grid-template-columns: 1fr !important; }
+
+  /* Buttons full width on tiny screens */
+  .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  /* Name heading */
+  h1 { font-size: clamp(1.8rem, 8vw, 2.4rem) !important; }
+}

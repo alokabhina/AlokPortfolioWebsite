@@ -12,7 +12,7 @@ export const PERSONAL = {
   whatsapp: '916200748856',
   location: 'Gorakhpur, India',
   available: true,
-  resumeUrl: '/resume/alok-resume.pdf',
+  resumeUrl: '/resume/Alok_Abhinandan_Resume.pdf',
 
   typingTitles: [
     'Full-Stack Developer',

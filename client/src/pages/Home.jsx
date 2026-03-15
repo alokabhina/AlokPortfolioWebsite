@@ -37,9 +37,10 @@ function HeroSection() {
     <section
       id="hero"
       className="relative min-h-screen flex items-center page-top"
+      style={{ overflow: "hidden" }}
     >
       <div className="container-main w-full">
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 320px", gap:"3rem", alignItems:"center" }} className="max-md:grid-cols-1">
+        <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:"2rem", alignItems:"center" }} className="md:grid-cols-[1fr_300px] lg:grid-cols-[1fr_340px]">
 
           {/* ── Left: Text Content ─────────────────────────── */}
           <motion.div
@@ -118,7 +119,7 @@ function HeroSection() {
             </motion.div>
 
             {/* Social links */}
-            <motion.div variants={item} className="flex items-center gap-4 pt-2">
+            <motion.div variants={item} className="flex flex-wrap items-center gap-3 pt-2">
               {[
                 { icon: Github,    href: PERSONAL.github,    label: 'GitHub'    },
                 { icon: Linkedin,  href: PERSONAL.linkedin,  label: 'LinkedIn'  },
@@ -131,11 +132,11 @@ function HeroSection() {
                   rel="noopener noreferrer"
                   aria-label={label}
                   className="flex items-center gap-2 font-mono text-xs transition-colors duration-200"
-                  style={{ color: 'var(--text-secondary)' }}
+                  style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
                   onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
-                  <Icon size={16} />
+                  <Icon size={16} style={{ flexShrink: 0 }} />
                   {label}
                 </a>
               ))}

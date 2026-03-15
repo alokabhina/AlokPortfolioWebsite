@@ -8,7 +8,7 @@ import Footer          from '@/components/Footer'
 import ScrollProgress  from '@/components/ScrollProgress'
 import ProtectedRoute  from '@/components/ProtectedRoute'
 import { useAnalytics } from '@/hooks'
-import LeadPopup from '@/components/LeadPopup'
+import LeadPopup from '@/components/Leadpopup'
 
 // ── Lazy loaded pages — each becomes a separate JS chunk ─────
 const Home           = lazy(() => import('@/pages/Home'))

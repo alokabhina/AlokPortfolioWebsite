@@ -1,0 +1,633 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ──────────────────────────────── */
+:root {
+  /* Dark Mode defaults */
+  --bg-primary:    #060A10;
+  --bg-secondary:  #0C1320;
+  --bg-card:       #111C2E;
+  --bg-card-hover: #152236;
+  --border:        #1A2D42;
+  --border-hover:  #243447;
+
+  --accent:        #00D4AA;
+  --accent-dim:    rgba(0, 212, 170, 0.12);
+  --accent-dark:   #0F6E56;
+  --accent-mid:    #1D9E75;
+
+  --text-primary:  #C8DFF0;
+  --text-secondary:#5A7A9A;
+  --text-heading:  #EAF4FF;
+  --text-muted:    #3A5570;
+
+  --status-green:  #4ADE80;
+  --status-yellow: #F59E0B;
+  --status-red:    #EF4444;
+
+  --nav-bg:        rgba(6, 10, 16, 0.85);
+  --shadow-card:   0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover:  0 12px 40px rgba(0, 0, 0, 0.6);
+  --glow-teal:     0 0 30px rgba(0, 212, 170, 0.25);
+  --glow-teal-lg:  0 0 60px rgba(0, 212, 170, 0.35);
+}
+
+/* Light Mode overrides */
+html.light {
+  --bg-primary:    #F0F8FF;
+  --bg-secondary:  #E0EAF5;
+  --bg-card:       #FFFFFF;
+  --bg-card-hover: #F7FBFF;
+  --border:        #CBD5E0;
+  --border-hover:  #A0B4C8;
+
+  --accent:        #0F6E56;
+  --accent-dim:    rgba(15, 110, 86, 0.08);
+  --accent-dark:   #085041;
+  --accent-mid:    #1D9E75;
+
+  --text-primary:  #1A3040;
+  --text-secondary:#5A7090;
+  --text-heading:  #0D1E2C;
+  --text-muted:    #8A9CAA;
+
+  --nav-bg:        rgba(240, 248, 255, 0.88);
+  --shadow-card:   0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-hover:  0 12px 36px rgba(0, 0, 0, 0.14);
+  --glow-teal:     0 0 20px rgba(15, 110, 86, 0.15);
+  --glow-teal-lg:  0 0 40px rgba(15, 110, 86, 0.2);
+}
+
+/* ─── Base Reset ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Subtle grid overlay */
+
+}
+
+
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-mid); }
+
+/* ─── Typography Defaults ────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: 'Syne', sans-serif;
+  color: var(--text-heading);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+p { color: var(--text-primary); }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ─── Utility Layer ──────────────────────────────────────── */
+@layer utilities {
+  /* Background using CSS vars */
+  .bg-card    { background-color: var(--bg-card); }
+  .bg-primary { background-color: var(--bg-primary); }
+  .bg-section { background-color: var(--bg-secondary); }
+
+  /* Text using CSS vars */
+  .text-head  { color: var(--text-heading); }
+  .text-body  { color: var(--text-primary); }
+  .text-muted { color: var(--text-secondary); }
+  .text-accent{ color: var(--accent); }
+
+  /* Border using CSS vars */
+  .border-base  { border-color: var(--border); }
+  .border-accent{ border-color: var(--accent); }
+
+  /* Glow effects */
+  .shadow-teal    { box-shadow: var(--glow-teal); }
+  .shadow-teal-lg { box-shadow: var(--glow-teal-lg); }
+
+  /* Section padding — consistent across all pages */
+  .section-pad { padding: 5rem 1.5rem; }
+  @screen lg { .section-pad { padding: 6.25rem 3.75rem; } }
+
+  /* Container */
+  .container-main {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  @screen lg {
+    .container-main {
+      padding-left: 3.75rem;
+      padding-right: 3.75rem;
+    }
+  }
+
+  /* Page top padding — accounts for fixed navbar */
+  .page-top { padding-top: 72px; }
+
+  /* Section label (monospace tag above heading) */
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .section-tag::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  /* Accent chip / badge */
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,212,170,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .chip:hover {
+    border-color: var(--accent);
+    background: rgba(0,212,170,0.18);
+  }
+
+  /* Card base */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, border-color 0.25s ease-out;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent);
+  }
+
+  /* Teal top-border card variant */
+  .card-accent::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    border-radius: 12px 12px 0 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card-accent:hover::before { opacity: 1; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 12px 28px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-teal);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    padding: 12px 28px;
+    border-radius: 6px;
+    border: 1px solid var(--accent);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s ease-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .btn-ghost:hover {
+    background: var(--accent-dim);
+    transform: translateY(-2px);
+  }
+
+  /* Tech stack badge */
+  .tech-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 3px 10px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  /* Lazy image — blur-up effect */
+  .img-lazy {
+    filter: blur(8px);
+    transition: filter 0.4s ease-out, opacity 0.4s ease-out;
+    opacity: 0.7;
+  }
+  .img-lazy.loaded {
+    filter: blur(0);
+    opacity: 1;
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 1000;
+    transform-origin: left;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Available badge */
+  .available-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+}
+
+/* ─── Framer Motion Page Wrapper ─────────────────────────── */
+.page-enter {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+}
+
+/* ─── Navbar Active Link ─────────────────────────────────── */
+.nav-link {
+  position: relative;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.25s;
+  padding-bottom: 2px;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transition: width 0.25s ease-out;
+}
+.nav-link:hover {
+  color: var(--accent);
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+.nav-link.active {
+  color: var(--accent);
+}
+
+/* ─── WhatsApp Float Button ──────────────────────────────── */
+.whatsapp-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
+  background: #25D366;
+  color: white;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s ease-out, box-shadow 0.2s;
+  text-decoration: none;
+}
+.whatsapp-float:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.55);
+}
+
+/* ─── Side Scroll Tracker ────────────────────────────────── */
+.side-tracker {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.side-tracker-line {
+  width: 1px;
+  flex: 1;
+  background: var(--border);
+  position: relative;
+  min-height: 16px;
+}
+.side-tracker-line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--accent);
+  transition: height 0.3s ease-out;
+}
+.side-tracker-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  transition: border-color 0.25s, background 0.25s, transform 0.25s;
+  cursor: pointer;
+  position: relative;
+}
+.side-tracker-dot.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  transform: scale(1.35);
+}
+.side-tracker-label {
+  position: absolute;
+  left: 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.side-tracker-dot.active .side-tracker-label,
+.side-tracker-dot:hover .side-tracker-label {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* ─── Timeline ───────────────────────────────────────────── */
+.timeline-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  transform: translateX(-50%);
+}
+
+/* ─── Accordion ──────────────────────────────────────────── */
+.accordion-content {
+  overflow: hidden;
+}
+
+/* ─── Image Lazy Load ────────────────────────────────────── */
+.lazy-image-wrapper {
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.lazy-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.5s ease, opacity 0.5s ease, transform 0.3s ease;
+  filter: blur(8px);
+  opacity: 0.6;
+}
+.lazy-image-wrapper img.loaded {
+  filter: blur(0);
+  opacity: 1;
+}
+.lazy-image-wrapper:hover img.loaded {
+  transform: scale(1.05);
+}
+
+/* ─── Selection ──────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 212, 170, 0.25);
+  color: var(--text-heading);
+}
+
+/* ─── Global Performance + Responsive Fix ───────────────── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Grid background ───────────────────────────────────────── */
+/* Static grid - dark mode */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,212,170,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,170,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+}
+html.light body::before {
+  background-image:
+    linear-gradient(rgba(0,100,80,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,100,80,0.05) 1px, transparent 1px);
+}
+
+/* ─── Animated square-forming lines (dark mode only) ────────── */
+/* A vertical line moves right, horizontal moves down — forms squares */
+@keyframes v-line-travel {
+  0%   { transform: translateX(-20vw); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateX(120vw); opacity: 0; }
+}
+@keyframes h-line-travel {
+  0%   { transform: translateY(-20vh); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateY(120vh); opacity: 0; }
+}
+@keyframes v-line-travel-2 {
+  0%   { transform: translateX(-20vw); opacity: 0; }
+  5%   { opacity: 0.5; }
+  95%  { opacity: 0.5; }
+  100% { transform: translateX(120vw); opacity: 0; }
+}
+@keyframes h-line-travel-2 {
+  0%   { transform: translateY(-20vh); opacity: 0; }
+  5%   { opacity: 0.5; }
+  95%  { opacity: 0.5; }
+  100% { transform: translateY(120vh); opacity: 0; }
+}
+
+/* Vertical travelling line 1 */
+.grid-vline-1 {
+  position: fixed;
+  top: 0; bottom: 0;
+  left: 0; width: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,212,170,0.8) 30%,
+    rgba(0,212,170,1)   50%,
+    rgba(0,212,170,0.8) 70%,
+    transparent 100%
+  );
+  animation: v-line-travel 8s linear infinite;
+}
+/* Vertical line 2 — offset delay */
+.grid-vline-2 {
+  position: fixed;
+  top: 0; bottom: 0;
+  left: 0; width: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,212,170,0.4) 30%,
+    rgba(0,212,170,0.6) 50%,
+    rgba(0,212,170,0.4) 70%,
+    transparent 100%
+  );
+  animation: v-line-travel-2 12s linear infinite 4s;
+}
+/* Horizontal travelling line 1 */
+.grid-hline-1 {
+  position: fixed;
+  left: 0; right: 0;
+  top: 0; height: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0,212,170,0.8) 30%,
+    rgba(0,212,170,1)   50%,
+    rgba(0,212,170,0.8) 70%,
+    transparent 100%
+  );
+  animation: h-line-travel 10s linear infinite 1s;
+}
+/* Horizontal line 2 — offset */
+.grid-hline-2 {
+  position: fixed;
+  left: 0; right: 0;
+  top: 0; height: 1px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0,212,170,0.3) 30%,
+    rgba(0,212,170,0.5) 50%,
+    rgba(0,212,170,0.3) 70%,
+    transparent 100%
+  );
+  animation: h-line-travel-2 14s linear infinite 6s;
+}
+
+/* Hide all animated lines in light mode */
+html.light .grid-vline-1,
+html.light .grid-vline-2,
+html.light .grid-hline-1,
+html.light .grid-hline-2 { display: none !important; }
+
+/* ─── Hero name overflow fix ────────────────────────────────── */
+.hero-name-wrap {
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* Hide flowing lines in light mode */
+html.light .grid-flowing-line { display: none !important; }
+
+/* Testimonials marquee scroll */
+@keyframes testimonial-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}

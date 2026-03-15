@@ -1,0 +1,36 @@
+{
+  "name": "alok-portfolio-server",
+  "version": "1.0.0",
+  "description": "Backend API for Alok Abhinandan portfolio",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev":   "nodemon index.js",
+    "build": "echo 'No build step needed for Node.js'"
+  },
+  "dependencies": {
+    "express":                    "^4.19.2",
+    "mongoose":                   "^8.7.0",
+    "cloudinary": "^1.37.0",
+    "multer":                     "^1.4.5-lts.1",
+    "multer-storage-cloudinary":  "^4.0.0",
+    "nodemailer":                 "^6.9.15",
+    "passport":                   "^0.7.0",
+    "passport-google-oauth20":    "^2.0.0",
+    "jsonwebtoken":               "^9.0.2",
+    "cookie-parser":              "^1.4.7",
+    "bcryptjs":                   "^2.4.3",
+    "cors":                       "^2.8.5",
+    "dotenv":                     "^16.4.5",
+    "express-rate-limit":         "^7.4.1",
+    "helmet":                     "^8.0.0",
+    "morgan":                     "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -9,54 +9,354 @@ import { SEO, Marquee, RevealOnScroll, LazyImage } from '@/components'
 import { useFetch } from '@/hooks'
 import { PERSONAL, STATS, PROJECTS } from '@/data/content'
 
-// ─── Hero Section ─────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL STYLES injected once
+   ───────────────────────────────────────────────────────────── */
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  /* ── tokens ── */
+  :root {
+    --font-display : 'Syne', sans-serif;
+    --font-body    : 'Outfit', sans-serif;
+    --font-mono    : 'JetBrains Mono', monospace;
+  }
+
+  /* ── hero grid: responsive via media query ── */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (min-width: 768px) {
+    .hero-grid {
+      grid-template-columns: 1fr 300px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-columns: 1fr 360px;
+      gap: 4rem;
+    }
+  }
+
+  /* ── image always on top on mobile, right on desktop ── */
+  .hero-img-col  { order: 1; }
+  .hero-text-col { order: 2; }
+  @media (min-width: 768px) {
+    .hero-img-col  { order: 2; }
+    .hero-text-col { order: 1; }
+  }
+
+  /* ── photo frame ── */
+  .photo-frame {
+    position: relative;
+    width: 220px; height: 270px;
+    margin: 0 auto;
+  }
+  @media (min-width: 480px) { .photo-frame { width: 260px; height: 320px; } }
+  @media (min-width: 768px) { .photo-frame { width: 290px; height: 360px; } }
+  @media (min-width: 1024px){ .photo-frame { width: 340px; height: 420px; } }
+
+  /* ── floating animation ── */
+  @keyframes float {
+    0%,100% { transform: translateY(0);   }
+    50%      { transform: translateY(-9px); }
+  }
+  .animate-float { animation: float 5s ease-in-out infinite; }
+
+  /* ── pulse dot ── */
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(74,222,128,.5); }
+    50%      { opacity:.7; box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+  }
+  .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+  /* ── available badge ── */
+  .avail-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid rgba(0,212,170,.35);
+    background: rgba(0,212,170,.07);
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: .03em;
+  }
+
+  /* ── btn primary ── */
+  .btn-prim {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-family: var(--font-body);
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none; cursor: pointer;
+    transition: all .2s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 4px 18px rgba(0,212,170,.28);
+  }
+  .btn-prim:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,212,170,.38);
+    filter: brightness(1.06);
+  }
+
+  /* ── btn ghost ── */
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 22px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: .88rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* ── tech badge ── */
+  .tech-tag {
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    font-weight: 500;
+    background: rgba(0,212,170,.08);
+    border: 1px solid rgba(0,212,170,.2);
+    color: var(--accent);
+    transition: all .18s;
+  }
+  .tech-tag:hover {
+    background: rgba(0,212,170,.15);
+    transform: translateY(-1px);
+  }
+
+  /* ── section tag ── */
+  .sec-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+  }
+
+  /* ── stat card ── */
+  .stat-card {
+    text-align: center;
+    padding: 28px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: all .25s;
+  }
+  .stat-card:hover {
+    border-color: rgba(0,212,170,.4);
+    box-shadow: 0 0 30px rgba(0,212,170,.08);
+    transform: translateY(-3px);
+  }
+
+  /* ── featured project card ── */
+  .feat-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+    text-decoration: none;
+    transition: border-color .25s, box-shadow .25s;
+  }
+  @media (min-width: 1024px) {
+    .feat-card { grid-template-columns: 1fr 1fr; }
+  }
+  .feat-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 50px rgba(0,212,170,.12);
+  }
+  .feat-card:hover .feat-img { transform: scale(1.04); }
+
+  /* ── feat image ── */
+  .feat-img {
+    transition: transform .5s cubic-bezier(.4,0,.2,1);
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top;
+  }
+
+  /* ── social link ── */
+  .social-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+    font-size: .74rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 7px 13px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all .18s;
+  }
+  .social-link:hover {
+    color: var(--accent);
+    border-color: rgba(0,212,170,.3);
+    background: rgba(0,212,170,.06);
+    transform: translateY(-2px);
+  }
+
+  /* ── corner decoration ── */
+  .corner-accent {
+    position: absolute;
+    width: 100%; height: 100%;
+    border-radius: 20px;
+    border: 1.5px solid var(--accent);
+    opacity: .22;
+    top: 12px; left: -12px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── glow ring ── */
+  .glow-ring {
+    position: absolute;
+    inset: -1px;
+    border-radius: 20px;
+    background: transparent;
+    box-shadow: 0 0 50px rgba(0,212,170,.18);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* ── code badge ── */
+  .code-badge {
+    position: absolute;
+    bottom: -16px; right: -16px;
+    z-index: 20;
+    padding: 9px 16px;
+    border-radius: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-card);
+    white-space: nowrap;
+  }
+
+  /* ── exp badge ── */
+  .exp-badge {
+    position: absolute;
+    top: -16px; left: -20px;
+    z-index: 20;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    font-family: var(--font-body);
+    font-size: .72rem;
+    font-weight: 700;
+    box-shadow: 0 4px 18px rgba(0,212,170,.35);
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* ── noise overlay ── */
+  .noise-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: .4;
+  }
+
+  /* ── hero bg mesh ── */
+  .hero-mesh {
+    position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+  }
+  .mesh-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(90px); opacity: .07;
+    background: var(--accent);
+  }
+`
+
+/* ─────────────────────────────────────────────────────────────
+   INJECT STYLES ONCE
+   ───────────────────────────────────────────────────────────── */
+function GlobalStyles() {
+  return <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HERO SECTION
+   ───────────────────────────────────────────────────────────── */
 function HeroSection() {
   const [text] = useTypewriter({
-    words:        PERSONAL.typingTitles,
-    loop:         true,
-    delaySpeed:   2000,
-    deleteSpeed:  40,
-    typeSpeed:    80,
+    words: PERSONAL.typingTitles,
+    loop: true,
+    delaySpeed: 2000,
+    deleteSpeed: 40,
+    typeSpeed: 80,
   })
 
-  // Hero entrance animation variants
   const container = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.12 } },
+    show: { transition: { staggerChildren: 0.11 } },
   }
   const item = {
-    hidden: { opacity: 0, y: 28 },
-    show:   { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] } },
+    hidden: { opacity: 0, y: 24 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.4, 0, 0.2, 1] } },
   }
-  const imgVariant = {
-    hidden: { opacity: 0, scale: 0.95 },
-    show:   { opacity: 1, scale: 1, transition: { duration: 0.55, delay: 0.3, ease: [0.4, 0, 0.2, 1] } },
+  const imgVar = {
+    hidden: { opacity: 0, scale: 0.93, x: 20 },
+    show: { opacity: 1, scale: 1, x: 0, transition: { duration: 0.65, delay: 0.25, ease: [0.4, 0, 0.2, 1] } },
   }
 
   return (
     <section
       id="hero"
       className="relative min-h-screen flex items-center page-top"
-      style={{ overflow: "hidden" }}
+      style={{ overflow: 'hidden' }}
     >
-      <div className="container-main w-full">
-        <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:"2rem", alignItems:"center" }} className="md:grid-cols-[1fr_300px] lg:grid-cols-[1fr_340px]">
+      {/* Background mesh blobs */}
+      <div className="hero-mesh">
+        <div className="mesh-blob" style={{ width: 500, height: 500, top: '10%', right: '-10%' }} />
+        <div className="mesh-blob" style={{ width: 300, height: 300, bottom: '15%', left: '-5%', opacity: .04 }} />
+      </div>
 
-          {/* ── Left: Text Content ─────────────────────────── */}
+      <div className="container-main w-full" style={{ position: 'relative', zIndex: 1 }}>
+        <div className="hero-grid">
+
+          {/* ── TEXT COLUMN ── */}
           <motion.div
+            className="hero-text-col flex flex-col gap-5 min-w-0"
             variants={container}
             initial="hidden"
             animate="show"
-            className="flex flex-col gap-5 order-2 md:order-1 min-w-0"
           >
             {/* Available badge */}
             <motion.div variants={item}>
-              <span className="available-badge">
+              <span className="avail-badge">
                 <span
-                  className="block w-[7px] h-[7px] rounded-full"
+                  className="pulse-dot"
                   style={{
-                    background: '#4ade80',
-                    animation: 'pulse-dot 2s ease-in-out infinite',
+                    display: 'block', width: 7, height: 7,
+                    borderRadius: '50%', background: '#4ade80', flexShrink: 0,
                   }}
                 />
                 Open to collaborations
@@ -66,13 +366,14 @@ function HeroSection() {
             {/* Name */}
             <motion.h1
               variants={item}
-              className="font-display font-extrabold leading-none"
               style={{
-                fontSize:      'clamp(2rem, 4.5vw, 3.5rem)',
-                letterSpacing: '-0.03em',
-                color:         'var(--text-heading)',
-                lineHeight:    1.05,
-                wordBreak:     'keep-all',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 800,
+                fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
+                letterSpacing: '-0.035em',
+                color: 'var(--text-heading)',
+                lineHeight: 1.02,
+                margin: 0,
               }}
             >
               {PERSONAL.name}
@@ -81,12 +382,14 @@ function HeroSection() {
             {/* Typing subtitle */}
             <motion.h2
               variants={item}
-              className="font-display font-bold"
               style={{
-                fontSize:      'clamp(1.1rem, 2.5vw, 1.8rem)',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                fontSize: 'clamp(1.1rem, 2.6vw, 1.75rem)',
                 letterSpacing: '-0.02em',
-                color:         'var(--accent)',
-                minHeight:     '2.2rem',
+                color: 'var(--accent)',
+                minHeight: '2.4rem',
+                margin: 0,
               }}
             >
               {text}
@@ -96,30 +399,30 @@ function HeroSection() {
             {/* Bio */}
             <motion.p
               variants={item}
-              className="text-base leading-relaxed max-w-[520px]"
-              style={{ color: 'var(--text-secondary)' }}
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '.95rem',
+                lineHeight: 1.75,
+                color: 'var(--text-secondary)',
+                maxWidth: 500,
+                margin: 0,
+              }}
             >
               {PERSONAL.heroBio}
             </motion.p>
 
             {/* CTA Buttons */}
-            <motion.div variants={item} className="flex flex-wrap gap-3 pt-2">
-              <Link to="/projects" className="btn-primary">
-                View My Work
-                <ArrowRight size={16} />
+            <motion.div variants={item} style={{ display: 'flex', flexWrap: 'wrap', gap: 12, paddingTop: 4 }}>
+              <Link to="/projects" className="btn-prim">
+                View My Work <ArrowRight size={15} />
               </Link>
-              <a
-                href={PERSONAL.resumeUrl}
-                download
-                className="btn-ghost"
-              >
-                <Download size={16} />
-                Download Resume
+              <a href={PERSONAL.resumeUrl} download className="btn-ghost">
+                <Download size={15} /> Download Resume
               </a>
             </motion.div>
 
             {/* Social links */}
-            <motion.div variants={item} className="flex flex-wrap items-center gap-3 pt-2">
+            <motion.div variants={item} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingTop: 4 }}>
               {[
                 { icon: Github,    href: PERSONAL.github,    label: 'GitHub'    },
                 { icon: Linkedin,  href: PERSONAL.linkedin,  label: 'LinkedIn'  },
@@ -131,111 +434,139 @@ function HeroSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex items-center gap-2 font-mono text-xs transition-colors duration-200"
-                  style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-                  onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                  className="social-link"
                 >
-                  <Icon size={16} style={{ flexShrink: 0 }} />
+                  <Icon size={15} style={{ flexShrink: 0 }} />
                   {label}
                 </a>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* ── Right: Profile Photo ───────────────────────── */}
+          {/* ── IMAGE COLUMN ── */}
           <motion.div
-            variants={imgVariant}
+            className="hero-img-col"
+            variants={imgVar}
             initial="hidden"
             animate="show"
-            className="flex justify-center md:justify-end order-1 md:order-2"
+            style={{ display: 'flex', justifyContent: 'center' }}
           >
-            <div className="relative w-[260px] h-[320px] sm:w-[300px] sm:h-[370px] lg:w-[340px] lg:h-[420px]">
+            {/* FIXED: photo-frame uses CSS class with proper responsive sizing,
+                no inline style conflict. Position: relative is set on .photo-frame */}
+            <div className="photo-frame">
 
-              {/* Teal offset border decoration */}
-              <div
-                className="absolute top-4 right-4 w-full h-full rounded-2xl"
-                style={{ border: '2px solid var(--accent)', opacity: 0.3, zIndex: 0 }}
-              />
+              {/* Corner offset decoration */}
+              <div className="corner-accent" />
 
-              {/* Photo frame */}
+              {/* Glow ring */}
+              <div className="glow-ring" />
+
+              {/* Photo */}
               <div
-                className="relative w-full h-full rounded-2xl overflow-hidden z-10 animate-float"
+                className="animate-float"
                 style={{
-                  border:    '1px solid var(--border)',
-                  boxShadow: '0 0 40px rgba(0,212,170,0.15)',
+                  position: 'relative',
+                  width: '100%', height: '100%',
+                  borderRadius: 20,
+                  overflow: 'hidden',
+                  border: '1px solid var(--border)',
+                  zIndex: 10,
                 }}
               >
                 <LazyImage
                   src="/images/alok-hero.jpg"
                   alt="Alok Abhinandan"
                   wrapClass="w-full h-full"
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full"
+                  style={{ objectFit: 'cover', objectPosition: 'top', display: 'block' }}
                 />
 
-                {/* Teal gradient overlay at bottom */}
+                {/* Bottom gradient overlay */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
                   style={{
-                    background: 'linear-gradient(to top, rgba(6,10,16,0.6), transparent)',
+                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    height: '40%', pointerEvents: 'none',
+                    background: 'linear-gradient(to top, rgba(6,10,16,.65), transparent)',
+                    zIndex: 2,
                   }}
                 />
               </div>
 
-              {/* Floating label badge on photo */}
-              <div
-                className="absolute -bottom-4 -left-4 z-20 px-4 py-2 rounded-xl font-mono text-xs font-medium"
-                style={{
-                  background:  'var(--bg-card)',
-                  border:      '1px solid var(--border)',
-                  color:       'var(--accent)',
-                  boxShadow:   'var(--shadow-card)',
-                }}
-              >
-                {'<'} Full-Stack Dev {' />'}
+              {/* Code badge — bottom right */}
+              <div className="code-badge">
+                {'< Full-Stack Dev />'}
               </div>
+
+              {/* Experience badge — top left */}
+              <div className="exp-badge">
+                🚀 2+ yrs exp
+              </div>
+
             </div>
           </motion.div>
 
         </div>
-        </div>
+      </div>
     </section>
   )
 }
 
-// ─── Stats Section ────────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+   STATS SECTION
+   ───────────────────────────────────────────────────────────── */
 function StatsSection() {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 })
+  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.25 })
 
   return (
-    <section ref={ref} className="section-pad" style={{ background: 'var(--bg-secondary)' }}>
+    <section
+      ref={ref}
+      className="section-pad"
+      style={{ background: 'var(--bg-secondary)', position: 'relative', overflow: 'hidden' }}
+    >
+      {/* Subtle top divider line */}
+      <div style={{
+        position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '60%', height: '1px',
+        background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
+        opacity: .3,
+      }} />
+
       <div className="container-main">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 16,
+          }}
+          className="lg:grid-cols-4"
+        >
           {STATS.map((stat, i) => (
             <RevealOnScroll key={stat.label} delay={i * 0.1}>
-              <div className="text-center">
+              <div className="stat-card">
                 <div
-                  className="font-display font-extrabold mb-2"
                   style={{
-                    fontSize:  'clamp(2.4rem, 5vw, 3.5rem)',
-                    color:     'var(--accent)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 800,
+                    fontSize: 'clamp(2.2rem, 4.5vw, 3.2rem)',
+                    color: 'var(--accent)',
                     letterSpacing: '-0.03em',
+                    lineHeight: 1,
+                    marginBottom: 8,
                   }}
                 >
                   {inView ? (
-                    <CountUp
-                      start={0}
-                      end={stat.value}
-                      duration={2.2}
-                      suffix={stat.suffix}
-                    />
-                  ) : (
-                    `0${stat.suffix}`
-                  )}
+                    <CountUp start={0} end={stat.value} duration={2.2} suffix={stat.suffix} />
+                  ) : `0${stat.suffix}`}
                 </div>
                 <p
-                  className="font-mono text-sm uppercase tracking-wider"
-                  style={{ color: 'var(--text-secondary)' }}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '.68rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '.1em',
+                    color: 'var(--text-secondary)',
+                    margin: 0,
+                  }}
                 >
                   {stat.label}
                 </p>
@@ -248,7 +579,9 @@ function StatsSection() {
   )
 }
 
-// ─── Featured Project Teaser ──────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+   FEATURED PROJECT SECTION
+   ───────────────────────────────────────────────────────────── */
 function FeaturedProjectSection() {
   const { data: projects } = useFetch('/api/projects', PROJECTS)
   const featured = projects.find?.(p => p.featured) || projects[0] || PROJECTS[0]
@@ -258,15 +591,24 @@ function FeaturedProjectSection() {
     <section className="section-pad">
       <div className="container-main">
         <RevealOnScroll>
-          <div className="flex items-center justify-between mb-10 flex-wrap gap-4">
+          <div
+            style={{
+              display: 'flex', alignItems: 'flex-end',
+              justifyContent: 'space-between',
+              marginBottom: 36, flexWrap: 'wrap', gap: 16,
+            }}
+          >
             <div>
-              <p className="section-tag">Featured Project</p>
+              <span className="sec-tag">Featured Project</span>
               <h2
-                className="font-display font-extrabold"
                 style={{
-                  fontSize:      'clamp(1.8rem, 3.5vw, 2.6rem)',
-                  color:         'var(--text-heading)',
-                  letterSpacing: '-0.02em',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 800,
+                  fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)',
+                  color: 'var(--text-heading)',
+                  letterSpacing: '-0.025em',
+                  margin: 0,
+                  lineHeight: 1.1,
                 }}
               >
                 Something I built
@@ -274,88 +616,112 @@ function FeaturedProjectSection() {
             </div>
             <Link
               to="/projects"
-              className="font-mono text-sm flex items-center gap-2 transition-colors duration-200"
-              style={{ color: 'var(--accent)' }}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '.78rem',
+                color: 'var(--accent)',
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                textDecoration: 'none',
+                padding: '8px 16px',
+                borderRadius: 9,
+                border: '1px solid rgba(0,212,170,.25)',
+                transition: 'all .18s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(0,212,170,.07)'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.transform = 'none'
+              }}
             >
-              View all projects <ArrowRight size={14} />
+              All projects <ArrowRight size={13} />
             </Link>
           </div>
         </RevealOnScroll>
 
-        {/* Featured card - clicking card goes to projects page */}
         <RevealOnScroll>
-          <Link
-            to="/projects"
-            className="group grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-2xl overflow-hidden transition-all duration-300"
-            style={{
-              border:         '1px solid var(--border)',
-              boxShadow:      'var(--shadow-card)',
-              textDecoration: 'none',
-              display:        'grid',
-              cursor:         'pointer',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'var(--accent)'
-              e.currentTarget.style.boxShadow   = 'var(--shadow-hover), 0 0 40px rgba(0,212,170,0.1)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--border)'
-              e.currentTarget.style.boxShadow   = 'var(--shadow-card)'
-            }}
-          >
-            {/* Screenshot */}
-            <div className="relative overflow-hidden" style={{ minHeight: '260px' }}>
+          <Link to="/projects" className="feat-card" style={{ display: 'grid' }}>
+            {/* Screenshot column */}
+            <div style={{ position: 'relative', overflow: 'hidden', minHeight: 280 }}>
               <LazyImage
                 src={featured.imageUrl || '/images/aspirantarena.jpg'}
                 alt={featured.title}
                 wrapClass="w-full h-full absolute inset-0"
-                className="w-full h-full object-cover object-top" style={{ transition: 'transform 0.5s ease' }}
+                className="feat-img"
               />
               {/* Overlay */}
               <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(135deg, rgba(6,10,16,0.4), rgba(0,212,170,0.05))' }}
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(135deg, rgba(6,10,16,.45) 0%, rgba(0,212,170,.04) 100%)',
+                  zIndex: 1,
+                }}
               />
               {/* Featured badge */}
               <div
-                className="absolute top-4 left-4 font-mono text-[11px] px-3 py-1 rounded-full"
                 style={{
-                  background: 'var(--accent)',
-                  color:      'var(--bg-primary)',
-                  fontWeight: 600,
+                  position: 'absolute', top: 16, left: 16, zIndex: 2,
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '.65rem', fontWeight: 700,
+                  padding: '5px 12px', borderRadius: 99,
+                  background: 'var(--accent)', color: 'var(--bg-primary)',
+                  letterSpacing: '.06em', textTransform: 'uppercase',
                 }}
               >
-                Featured
+                ★ Featured
               </div>
             </div>
 
-            {/* Content */}
+            {/* Content column */}
             <div
-              className="flex flex-col gap-5 p-8"
-              style={{ background: 'var(--bg-card)' }}
+              style={{
+                display: 'flex', flexDirection: 'column', gap: 20,
+                padding: '32px 32px',
+                background: 'var(--bg-card)',
+              }}
             >
               <div>
                 <h3
-                  className="font-display font-bold mb-3"
                   style={{
-                    fontSize:      '1.7rem',
-                    color:         'var(--text-heading)',
+                    fontFamily: 'var(--font-display)',
+                    fontWeight: 700,
+                    fontSize: '1.65rem',
                     letterSpacing: '-0.02em',
+                    color: 'var(--text-heading)',
+                    margin: '0 0 10px',
                   }}
                 >
                   {featured.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '.88rem',
+                    lineHeight: 1.7,
+                    color: 'var(--text-secondary)',
+                    margin: 0,
+                  }}
+                >
                   {featured.description}
                 </p>
               </div>
 
               {/* Feature bullets */}
               {featured.features && (
-                <ul className="flex flex-col gap-2">
+                <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {featured.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      <span style={{ color: 'var(--accent)', marginTop: '2px' }}>▸</span>
+                    <li
+                      key={f}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: 9,
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '.83rem',
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
+                      <span style={{ color: 'var(--accent)', marginTop: 1, fontSize: '.8rem' }}>▸</span>
                       {f}
                     </li>
                   ))}
@@ -363,26 +729,36 @@ function FeaturedProjectSection() {
               )}
 
               {/* Tech stack */}
-              <div className="flex flex-wrap gap-2">
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
                 {featured.techStack.map(t => (
-                  <span key={t} className="tech-badge">{t}</span>
+                  <span key={t} className="tech-tag">{t}</span>
                 ))}
               </div>
 
               {/* Links */}
-              <div className="flex items-center gap-4 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+              <div
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 20,
+                  paddingTop: 16, borderTop: '1px solid var(--border)',
+                  marginTop: 'auto',
+                }}
+              >
                 {featured.githubUrl && (
                   <a
                     href={featured.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
-                    className="flex items-center gap-2 font-mono text-sm transition-all duration-200 hover:-translate-y-[2px]"
-                    style={{ color: 'var(--text-secondary)' }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      fontFamily: 'var(--font-mono)', fontSize: '.75rem',
+                      color: 'var(--text-secondary)', textDecoration: 'none',
+                      transition: 'color .18s',
+                    }}
                     onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
                     onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}
                   >
-                    <Github size={16} /> GitHub
+                    <Github size={15} /> GitHub
                   </a>
                 )}
                 {featured.liveUrl && (
@@ -391,10 +767,13 @@ function FeaturedProjectSection() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={e => e.stopPropagation()}
-                    className="flex items-center gap-2 font-mono text-sm font-semibold transition-all duration-200"
-                    style={{ color: 'var(--accent)' }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      fontFamily: 'var(--font-mono)', fontSize: '.75rem', fontWeight: 600,
+                      color: 'var(--accent)', textDecoration: 'none',
+                    }}
                   >
-                    <ExternalLink size={16} /> Live Demo ↗
+                    <ExternalLink size={15} /> Live Demo ↗
                   </a>
                 )}
               </div>
@@ -406,16 +785,18 @@ function FeaturedProjectSection() {
   )
 }
 
-// ─── Home Page Export ─────────────────────────────────────────
+/* ─────────────────────────────────────────────────────────────
+   HOME PAGE
+   ───────────────────────────────────────────────────────────── */
 export default function Home() {
   return (
     <>
+      <GlobalStyles />
       <SEO
         title="Alok Abhinandan | Full-Stack Developer & Educator"
         description="Full-Stack Developer and Educator specializing in MERN Stack and Python. Building AspirantArena and teaching web development."
         path="/"
       />
-
       <main>
         <HeroSection />
         <Marquee />
